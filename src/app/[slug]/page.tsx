@@ -1,21 +1,21 @@
 "use client";
-import sitemap from "@/data/menu";
+import { getMenuTitle } from "@/data/menu";
 import { useSidebarStore } from "@/store/useSidebarStore";
 import MenuIcon from "@mui/icons-material/Menu";
 import { IconButton } from "@mui/material";
+import { usePathname } from "next/navigation";
 
-export default function Page({ params }: { params: { slug: string } }) {
-  const item = sitemap[0].items.find(
-    (x) => x.path?.replace("/", "") === params.slug,
-  );
+export default function Page() {
   const toggle = useSidebarStore((s) => s.toggle);
+  const pathname = usePathname();
+  const title = getMenuTitle(pathname);
 
   return (
     <div>
-      <h1>{item?.name ?? "Not Found"}</h1>
       <IconButton onClick={toggle}>
         <MenuIcon />
       </IconButton>
+      <h1>{title}</h1>
     </div>
   );
 }
