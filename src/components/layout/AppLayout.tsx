@@ -4,7 +4,7 @@ import Sidebar from "./Sidebar";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box className="w-full h-full" sx={{ display: "flex" }}>
       <Sidebar />
       <Box
         component="main"
