@@ -1,7 +1,6 @@
 "use client";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import ApiIcon from "@mui/icons-material/Api";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
 import FlagIcon from "@mui/icons-material/Flag";
 import PolylineIcon from "@mui/icons-material/Polyline";
 import StorageIcon from "@mui/icons-material/Storage";
@@ -24,10 +23,21 @@ import { useState } from "react";
 const drawerWidth = 240;
 
 const MenuItem = [
-  { text: "Components", icon: StorageIcon },
-  { text: "Component API", icon: ApiIcon },
-  { text: "Customization", icon: PolylineIcon },
-  { text: "How-to guides", icon: WorkspacePremiumIcon },
+  {
+    text: "Getting started",
+    icon: FlagIcon,
+    id: "getting-started",
+    SubMenu: [
+      { text: "Overview", link: "/getting-started/overview", icon: FlagIcon },
+      { text: "Installation", link: "/getting-started/installation" },
+      { text: "Usage", link: "/getting-started/usage" },
+      { text: "MCP", link: "/getting-started/mcp", badge: "New" },
+    ],
+  },
+  { text: "Components", icon: StorageIcon, link: "/components" },
+  { text: "Component API", icon: ApiIcon, link: "/components-api" },
+  { text: "Customization", icon: PolylineIcon, link: "/customization" },
+  { text: "How-to guides", icon: WorkspacePremiumIcon, link: "/how-to-guides" },
 ];
 
 const Sidebar = () => {
@@ -35,8 +45,8 @@ const Sidebar = () => {
     "getting-started",
   );
 
-  const handleToggle = (section: string) => {
-    setOpenSection((prev) => (prev === section ? null : section));
+  const handleToggle = (id: string) => {
+    setOpenSection((prev) => (prev === id ? null : id));
   };
 
   return (
@@ -51,7 +61,7 @@ const Sidebar = () => {
           borderRight: "1px solid #e5e7eb",
         },
       }}>
-      {/* Header & Logo Section */}
+      {/* Header */}
       <Box
         className="flex flex-row"
         sx={{ px: 1, py: 0.5, gap: 2, alignItems: "center" }}>
@@ -66,102 +76,85 @@ const Sidebar = () => {
           Material UI v7.3.7
         </Typography>
       </Box>
-
       <Divider />
 
       <List sx={{ p: 0, mt: 1 }}>
-        {/* Getting Started - Collapsible */}
-        <ListItem disablePadding sx={{ display: "block", px: "6px", py: 0 }}>
-          <ListItemButton
-            onClick={() => handleToggle("getting-started")}
-            sx={{ px: "6px", py: 0.5, borderRadius: 1.5 }}>
-            <FlagIcon
-              sx={{ fontSize: 13, mr: 0.5 }}
-              className="text-blue-500"
-            />
-            <ListItemText
-              primary="Getting started"
-              sx={{
-                m: 0,
-                "& .MuiTypography-root": {
-                  fontSize: 13,
-                },
-              }}
-            />
-            {openSection === "getting-started" ? (
-              <ExpandLess sx={{ fontSize: 13 }} />
-            ) : (
-              <ExpandMore sx={{ fontSize: 13 }} />
-            )}
-          </ListItemButton>
-
-          <Collapse
-            in={openSection === "getting-started"}
-            timeout="auto"
-            unmountOnExit>
-            <List component="div" disablePadding>
-              {["Overview", "Installation", "Usage"].map((text) => (
-                <ListItemButton
-                  key={text}
+        {MenuItem.map((item) => (
+          <Box key={item.text}>
+            {/* Mục chính */}
+            <ListItem
+              disablePadding
+              sx={{ display: "block", px: "6px", py: 0 }}>
+              <ListItemButton
+                component={item.link ? Link : "div"}
+                href={item.link || "#"}
+                onClick={() =>
+                  item.SubMenu && handleToggle(item.id || item.text)
+                }
+                sx={{ py: 0.5, px: 1, borderRadius: 1.5 }}>
+                {item.icon && (
+                  <item.icon sx={{ fontSize: 13, mr: 1, color: "#1976d2" }} />
+                )}
+                <ListItemText
+                  primary={item.text}
                   sx={{
-                    px: "6px",
-                    py: 0.5,
-                    pl: 2,
-                    borderRadius: 1.5,
+                    m: 0,
                     "& .MuiTypography-root": {
-                      fontSize: 11,
+                      fontSize: 13,
                     },
                   }}
-                  component={Link}
-                  href={`/material-ui/getting-started/${text.toLowerCase()}`}>
-                  <ListItemText primary={text} sx={{ m: 0 }} />
-                </ListItemButton>
-              ))}
-              <ListItemButton
-                sx={{
-                  px: "6px",
-                  py: 0.5,
-                  pl: 2,
-                  borderRadius: 1.5,
-                  "& .MuiTypography-root": {
-                    fontSize: 11,
-                  },
-                }}
-                component={Link}
-                href="/material-ui/getting-started/mcp">
-                <ListItemText primary="MCP" sx={{ m: 0 }} />
-                <Chip
-                  label="New"
-                  size="small"
-                  color="default"
-                  sx={{ height: 18, fontSize: "0.65rem" }}
                 />
+                {item.SubMenu &&
+                  (openSection === item.id ? (
+                    <ExpandLess sx={{ fontSize: 13 }} />
+                  ) : (
+                    <ExpandMore sx={{ fontSize: 13 }} />
+                  ))}
               </ListItemButton>
-            </List>
-          </Collapse>
-        </ListItem>
+            </ListItem>
 
-        {/* Regular Items */}
-        {MenuItem.map((menu) => (
-          <ListItem key={menu.text} sx={{ px: "6px", py: 0 }}>
-            <ListItemButton
-              sx={{
-                px: "6px",
-                py: 0.5,
-                borderRadius: 1.5,
-                "& .MuiTypography-root": {
-                  fontSize: 13,
-                },
-              }}>
-              {menu.icon && (
-                <menu.icon
-                  sx={{ mr: 0.5, display: "flex", fontSize: 13 }}
-                  className="text-blue-500"
-                />
-              )}
-              <ListItemText primary={menu.text} sx={{ m: 0 }} />
-            </ListItemButton>
-          </ListItem>
+            {/* Mục con (nếu có) */}
+            {item.SubMenu && (
+              <Collapse
+                in={openSection === item.id}
+                timeout="auto"
+                unmountOnExit
+                sx={{ px: "6px" }}>
+                <List component="div" disablePadding sx={{ p: 0, pl: 2 }}>
+                  {item.SubMenu.map((sub) => (
+                    <ListItemButton
+                      key={sub.text}
+                      component={Link}
+                      href={sub.link}
+                      sx={{ py: 0.3, borderRadius: 1.5 }}>
+                      {sub.icon && (
+                        <sub.icon
+                          sx={{ fontSize: 12, mr: 0.75, color: "#1976d2" }}
+                        />
+                      )}
+                      <ListItemText
+                        primary={sub.text}
+                        sx={{
+                          m: 0,
+                          "& .MuiTypography-root": {
+                            fontSize: 12,
+                          },
+                        }}
+                      />
+                      {sub.badge && (
+                        <Chip
+                          label={sub.badge}
+                          size="small"
+                          sx={{ height: 16, fontSize: 8 }}
+                          color="default"
+                        />
+                      )}
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Collapse>
+            )}
+          </Box>
         ))}
       </List>
     </Drawer>
