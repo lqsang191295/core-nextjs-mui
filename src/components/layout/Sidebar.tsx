@@ -1,25 +1,38 @@
 "use client";
 
-import { MenuItem } from "@/data/menu";
+import { MenuItemData } from "@/data/menu";
 import { useSidebarStore } from "@/store/useSidebarStore";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
+  ExpandLess,
+  ExpandMore,
+  Logout,
+  MoreVert,
+  Person,
+  Settings,
+} from "@mui/icons-material";
+import {
+  Avatar,
   Box,
   Chip,
   Collapse,
   Divider,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
+  ListItemIcon,
   ListItemText,
+  Menu,
+  MenuItem,
+  Stack,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const drawerWidth = 240;
 
@@ -28,11 +41,11 @@ const Sidebar = () => {
   const [openSection, setOpenSection] = useState<string | null>(
     "getting-started",
   );
-
   const { open, closeDrawer } = useSidebarStore();
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const openAnchorEl = Boolean(anchorEl);
 
   const handleToggle = (id: string) => {
     setOpenSection((prev) => (prev === id ? null : id));
@@ -49,8 +62,16 @@ const Sidebar = () => {
     },
   });
 
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
   const drawerContent = (
-    <>
+    <Box className="flex flex-col w-full" sx={{ height: "100%" }}>
       <Box
         className="flex flex-row"
         sx={{ px: 1, py: 0.5, gap: 2, alignItems: "center" }}>
@@ -63,8 +84,8 @@ const Sidebar = () => {
       </Box>
       <Divider />
 
-      <List sx={{ px: "6px" }}>
-        {MenuItem.map((item) => {
+      <List sx={{ px: "6px", flex: 1, overflowY: "auto" }}>
+        {MenuItemData.map((item) => {
           const isParentActive = item.link && isActive(item.link);
 
           return (
@@ -159,7 +180,115 @@ const Sidebar = () => {
           );
         })}
       </List>
-    </>
+
+      <Divider />
+
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          p: 1,
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}>
+        <Box className="flex flex-row items-center" sx={{ gap: 1 }}>
+          <Avatar alt="Remy Sharp" src="/static/images/avatar.jpg" />
+          <Typography variant="body2">Admin</Typography>
+        </Box>
+
+        <Box>
+          {/* nút 3 chấm */}
+          <IconButton size="small" onClick={handleOpenMenu}>
+            <MoreVert />
+          </IconButton>
+
+          {/* menu */}
+          <Menu
+            anchorEl={anchorEl}
+            open={openAnchorEl}
+            onClose={handleCloseMenu}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left", // Neo vào bên trái của nút
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left", // Điểm bắt đầu của menu cũng từ bên trái
+            }}
+            slotProps={{
+              paper: {
+                sx: {
+                  gap: 0,
+                  mt: 1,
+                  "& .MuiMenuItem-root": {
+                    px: 1, // Giảm padding trái/phải của từng dòng
+                    py: 0.5, // Giảm padding trên/dưới để menu gọn hơn
+                  },
+                },
+              },
+            }}>
+            <MenuItem onClick={handleCloseMenu}>
+              <ListItemIcon>
+                <Person
+                  fontSize="small"
+                  sx={{
+                    fontSize: 15,
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                sx={{
+                  "& .MuiTypography-root": {
+                    fontSize: 12,
+                  },
+                }}>
+                Profiles
+              </ListItemText>
+            </MenuItem>
+
+            <MenuItem onClick={handleCloseMenu}>
+              <ListItemIcon>
+                <Settings
+                  fontSize="small"
+                  sx={{
+                    fontSize: 15,
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                sx={{
+                  "& .MuiTypography-root": {
+                    fontSize: 12,
+                  },
+                }}>
+                Settings
+              </ListItemText>
+            </MenuItem>
+
+            <Divider />
+
+            <MenuItem onClick={handleCloseMenu}>
+              <ListItemIcon>
+                <Logout
+                  fontSize="small"
+                  sx={{
+                    fontSize: 15,
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                sx={{
+                  "& .MuiTypography-root": {
+                    fontSize: 12,
+                  },
+                }}>
+                Logout
+              </ListItemText>
+            </MenuItem>
+          </Menu>
+        </Box>
+      </Stack>
+    </Box>
   );
 
   if (isMobile) {
@@ -170,7 +299,7 @@ const Sidebar = () => {
         onClose={closeDrawer}
         ModalProps={{ keepMounted: true }}
         sx={{
-          "& .MuiDrawer-paper": { width: drawerWidth },
+          "& .MuiDrawer-paper": { width: drawerWidth, height: "100%" },
         }}>
         {drawerContent}
       </Drawer>
@@ -195,6 +324,7 @@ const Sidebar = () => {
           [`& .MuiDrawer-paper`]: {
             position: "relative",
             width: "100%",
+            height: "100%",
             boxSizing: "border-box",
             borderRight: "1px solid #e5e7eb",
           },

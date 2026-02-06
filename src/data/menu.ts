@@ -4,7 +4,7 @@ import PolylineIcon from "@mui/icons-material/Polyline";
 import StorageIcon from "@mui/icons-material/Storage";
 import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 
-export const MenuItem = [
+export const MenuItemData = [
   {
     text: "Getting started",
     icon: FlagIcon,
@@ -23,7 +23,7 @@ export const MenuItem = [
 ];
 
 export function getMenuTitle(pathname: string): string {
-  for (const menu of MenuItem) {
+  for (const menu of MenuItemData) {
     // menu có link trực tiếp
     if ("link" in menu && menu.link === pathname) {
       return menu.text;
