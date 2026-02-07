@@ -33,6 +33,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
+import ThemeSwitch from "../base/ThemeSwitch";
 
 const drawerWidth = 240;
 
@@ -81,6 +82,7 @@ const Sidebar = () => {
           </svg>
         </Box>
         <Typography variant="body2">Material UI v7.3.7</Typography>
+        <ThemeSwitch />
       </Box>
       <Divider />
 
